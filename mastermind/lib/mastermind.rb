@@ -24,10 +24,10 @@ puts "I have generated a beginner sequence with four elements made up of: (r)ed,
 loop do
   puts "What would you like to guess?"
   guess = gets.chomp
-  if guess == game.code
+  if guess == game.code.join
     p "You've won!"
   elsif guess == "c" || guess == "cheat"
-    p @code
+    p game.code
   elsif guess == "quit"
     game.quit
   elsif guess.length < 4
