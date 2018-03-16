@@ -1,18 +1,19 @@
 class Game
   attr_reader :choice,
               :code,
-              :instructions
+              :instructions,
+              :player
+
+  attr_accessor :start_time,
+                :end_time
 
   def initialize(player)
     @code = []
     @player = player
     @instructions = "Here are some instructions"
+    @start_time = Time.new
+    @end_time = Time.new
   end
-
-  # def prompt
-  #   puts "What is your guess? > "
-  #   guess = gets.chomp
-  # end
 
   def quit
     Process.exit
@@ -55,14 +56,31 @@ class Game
     end
     
     #Give feedback
-    p "'#{colors_of_guess_for_feedback.join.upcase}' has #{number_of_correct_colors} elements with #{number_of_correct_positions} in the correct positions. You've taken #{@player.guesses.length} guesses."
+    p "'#{colors_of_guess_for_feedback.join.upcase}' has #{number_of_correct_colors} correct elements with #{number_of_correct_positions} in the correct positions. You've taken #{@player.guesses.length} guesses."
   end
 
   def generate_code
-    # options = ["r", "g", "b", "y"]
-    # 4.times do |index|
-    #   @code << options[rand(0..3)]
-    # end
-    @code = ["r", "r", "g", "b"]
+    options = ["r", "g", "b", "y"]
+    4.times do |index|
+      @code << options[rand(0..3)]
+    end
+    # @code = ["r", "r", "g", "b"]
+  end
+
+  def over(correct_guess)
+    @end_time = Time.now
+    seconds_to_complete = (@end_time.sec) - (@start_time.sec)
+    p end_time.sec
+    p @start_time.sec
+    p seconds_to_complete
+    minutes_to_complete = (@end_time.min) - (@start_time.sec)
+    p minutes_to_complete
+    leftover_seconds_after_minutes_to_complete = seconds_to_complete % 60
+    p leftover_seconds_after_minutes_to_complete
+    if minutes_to_complete > 0
+      puts "Congratulations! You guessed the sequence #{correct_guess.upcase} in #{@player.guesses.length} guesses over #{minutes_to_complete} minutes, #{leftover_seconds_after_minutes_to_complete} seconds."
+    else
+      puts "Congratulations! You guessed the sequence #{correct_guess.upcase} in #{@player.guesses.length} guesses over #{seconds_to_complete} seconds."
+    end
   end
 end

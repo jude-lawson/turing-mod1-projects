@@ -19,23 +19,49 @@ loop do
   end
 end
 
-game.generate_code
-puts "I have generated a beginner sequence with four elements made up of: (r)ed, (g)reen, (b)lue, and (y)ellow. Use (q)uit at any time to end the game."
+def start_round(game)
+  game.start_time = Time.now
+  p game.start_time
+  game.generate_code
+  puts "I have generated a beginner sequence with four elements made up of: (r)ed, (g)reen, (b)lue, and (y)ellow. Use (q)uit at any time to end the game."
+  loop do
+    puts "What would you like to guess?"
+    guess = gets.chomp
+    if guess == game.code.join
+      p game.end_time
+      game.over(guess)
+      p "Beginning time: #{game.start_time}"
+      p "End time: #{game.end_time}"
+      break
+    elsif guess == "c" || guess == "cheat"
+      p game.code
+    elsif guess == "quit"
+      game.quit
+    elsif guess.length < 4
+      puts "That guess was too short"
+    elsif guess.length > 4
+      puts "That guess was too long"
+    else 
+      game.evaluate_guess(guess)
+    end
+  end
+end
+
+start_round(game)
+
 loop do
-  puts "What would you like to guess?"
-  guess = gets.chomp
-  if guess == game.code.join
-    p "You've won!"
-  elsif guess == "c" || guess == "cheat"
-    p game.code
-  elsif guess == "quit"
-    game.quit
-  elsif guess.length < 4
-    puts "That guess was too short"
-  elsif guess.length > 4
-    puts "That guess was too long"
-  else 
-    game.evaluate_guess(guess)
+  p "Would you like to (p)lay again or (q)uit"
+  play_again = gets.chomp.downcase
+  if play_again == "p" || play_again =="play"
+    game.start_time = Time.now
+    new_player = Player.new
+    new_game = Game.new(new_player)
+    start_round(new_game)
+  elsif play_again == "q" || play_again == "quit"
+    p "Thanks for playing!"
+    break
+  else
+    p "I'm sorry. I don't understand what you said. Could you please try again?"
   end
 end
 
