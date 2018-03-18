@@ -6,12 +6,12 @@ game = Game.new(player)
 puts "Welcome to MASTERMIND\n\n"
 
 loop do
-  puts "Would you like to (p)lay, read the (i)nstructions, or (q)uit?"
+  print "Would you like to (p)lay, read the (i)nstructions, or (q)uit?\n> "
   initial_choice = gets.chomp
   if initial_choice == "p" || initial_choice == "play"
     break
   elsif initial_choice == "i" || initial_choice == "instructions"
-    p game.instructions
+    puts game.instructions
   elsif initial_choice == "q" || initial_choice == "quit"
     game.quit
   else
@@ -20,27 +20,24 @@ loop do
 end
 
 def start_round(game)
-  game.start_time = Time.now
-  p game.start_time
+  game.start_game_timer
   game.generate_code
+  puts `clear`
   puts "I have generated a beginner sequence with four elements made up of: (r)ed, (g)reen, (b)lue, and (y)ellow. Use (q)uit at any time to end the game."
   loop do
-    puts "What would you like to guess?"
+    print "What's your guess? > "
     guess = gets.chomp
     if guess == game.code.join
-      p game.end_time
       game.over(guess)
-      p "Beginning time: #{game.start_time}"
-      p "End time: #{game.end_time}"
       break
     elsif guess == "c" || guess == "cheat"
-      p game.code
+      puts "The secret code is #{game.code.join}"
     elsif guess == "quit"
       game.quit
     elsif guess.length < 4
-      puts "That guess was too short"
+      puts "That guess was too short."
     elsif guess.length > 4
-      puts "That guess was too long"
+      puts "That guess was too long."
     else 
       game.evaluate_guess(guess)
     end
@@ -50,18 +47,17 @@ end
 start_round(game)
 
 loop do
-  p "Would you like to (p)lay again or (q)uit"
+  print "Would you like to (p)lay again or (q)uit? > "
   play_again = gets.chomp.downcase
   if play_again == "p" || play_again =="play"
-    game.start_time = Time.now
     new_player = Player.new
     new_game = Game.new(new_player)
     start_round(new_game)
   elsif play_again == "q" || play_again == "quit"
-    p "Thanks for playing!"
+    puts "Thanks for playing!"
     break
   else
-    p "I'm sorry. I don't understand what you said. Could you please try again?"
+    puts "I'm sorry. I don't understand what you said. Could you please try again?"
   end
 end
 
