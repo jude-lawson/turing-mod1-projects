@@ -1,14 +1,33 @@
 require './lib/Game'
 require './lib/Player'
 
-player = Player.new
-game = Game.new(player)
 puts "Welcome to MASTERMIND\n\n"
-
+game = ""
 loop do
   print "Would you like to (p)lay, read the (i)nstructions, or (q)uit?\n> "
-  initial_choice = gets.chomp
+  initial_choice = gets.chomp.downcase
+  player = Player.new
   if initial_choice == "p" || initial_choice == "play"
+    loop do
+      print `clear`
+      print "What difficulty level would you like to use - (b)eginner, (i)ntermediate, or (a)dvanced? > "
+      difficulty = gets.chomp.downcase
+      if difficulty == "b"|| difficulty == "beginner"
+        game = Game.new(player,difficulty)
+        puts "Beginner game"
+        break
+      elsif difficulty = "i" || difficulty == "intermediate"
+        game = Game.new(player,difficulty)
+        puts "Intermediate game"
+        break
+      elsif difficulty = "a" || difficulty == "advanced"
+        game = Game.new(player,difficulty)
+        puts "Advanced game"
+        break
+      else
+        puts "I'm sorry, I did not understand that answer. Please answer either with (b)eginner, (i)ntermediate, or (a)dvanced."
+      end
+    end
     break
   elsif initial_choice == "i" || initial_choice == "instructions"
     puts game.instructions
@@ -32,7 +51,7 @@ def start_round(game)
       break
     elsif guess == "c" || guess == "cheat"
       puts "The secret code is #{game.code.join}"
-    elsif guess == "quit"
+    elsif guess == "quit" || guess == "q"
       game.quit
     elsif guess.length < 4
       puts "That guess was too short."
@@ -51,7 +70,7 @@ loop do
   play_again = gets.chomp.downcase
   if play_again == "p" || play_again =="play"
     new_player = Player.new
-    new_game = Game.new(new_player)
+    new_game = Game.new(new_player, new_difficulty)
     start_round(new_game)
   elsif play_again == "q" || play_again == "quit"
     puts "Thanks for playing!"

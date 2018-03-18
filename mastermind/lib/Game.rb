@@ -6,8 +6,9 @@ class Game
               :start_time,
               :end_time
 
-  def initialize(player)
+  def initialize(player,difficulty)
     @code = []
+    @difficulty = difficulty
     @player = player
     @instructions = "This game is about guessing a randomly generated sequence of colors in a particular order. When prompted, enter a guess in the form of successive letters representing the colors (r)ed, (g)reen, (b)lue, or (y)ellow.\n\nAn example guess > 'RRGB'.\n\nThe game will run until you guess the corect answer (giving feedback for incorrect answers along the way), or until you type (q)uit."
     @start_time = Time.new
@@ -40,7 +41,18 @@ class Game
     @player.guesses << colors_of_guess
     # Gather colors of guess into an array for feedback
     colors_of_guess_for_feedback = colors_of_guess.map do |color_guess|
-      color_guess["color"]
+      case color_guess["color"].downcase
+      when 'r'
+        "\033[31mR"
+      when 'g'
+        "\033[32mG"
+      when 'b'
+        "\033[34mB"
+      when 'y'
+        "\033[33mY"
+      else
+        color_guess["color"].upcase
+      end
     end
 
     # Get number of correct colors and positions in guess
@@ -58,10 +70,15 @@ class Game
     end
     
     #Give feedback
-    puts "'#{colors_of_guess_for_feedback.join.upcase}' has #{number_of_correct_colors} correct elements with #{number_of_correct_positions} in the correct positions. You've taken #{@player.guesses.length} guesses."
+    puts "'#{colors_of_guess_for_feedback.join}\033[30m' has #{number_of_correct_colors} correct elements with #{number_of_correct_positions} in the correct positions. You've taken #{@player.guesses.length} guesses."
   end
 
   def generate_code
+    case @difficulty
+    when "beginner"
+    when "intermediate"
+    when "advanced"
+    end
     options = ["r", "g", "b", "y"]
     4.times do |index|
       @code << options[rand(0..3)]
@@ -76,7 +93,6 @@ class Game
     if minutes_to_complete > 0
       puts "Congratulations! You guessed the sequence #{correct_guess.upcase} in #{@player.guesses.length} guesses over #{minutes_to_complete} minutes, #{remaining_seconds_after_minutes} seconds."
     else
-      # require 'pry'; binding.pry
       puts "Congratulations! You guessed the sequence #{correct_guess.upcase} in #{@player.guesses.length} guesses over #{seconds_to_complete} seconds."
     end
   end
