@@ -119,12 +119,16 @@ class Game
       high_scores_data = JSON.parse(high_scores_data_file)
       high_scores_data["scores"] << ({"name" => @player.name, "pattern" => @code, "guesses" => @player.guesses.length, "time" => @total_time })
       high_scores = JSON.generate(high_scores_data)
-      # require 'pry'; binding.pry
     else
       high_scores = JSON.generate({"scores" => [{"name" => @player.name, "pattern" => @code, "guesses" => @player.guesses.length, "time" => @total_time }]})
     end
-    #still have to sort hash
     high_scores_data_file = IO.write("lib/data/scores.json", high_scores, {mode: "w+"})
+  end
+
+  def sort_and_present_high_score
+    # create an array of arrays where inner arrays have score as first value and index in hash as the second
+    # slice it to get top 10
+    #
   end
 
   def over(correct_guess)
