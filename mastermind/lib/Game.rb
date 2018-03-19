@@ -4,11 +4,12 @@ class Game
               :instructions,
               :player,
               :start_time,
-              :end_time
+              :end_time,
+              :difficulty
 
-  def initialize(player,difficulty)
+  def initialize(player)
     @code = []
-    @difficulty = difficulty
+    @difficulty = ""
     @player = player
     @instructions = "This game is about guessing a randomly generated sequence of colors in a particular order. When prompted, enter a guess in the form of successive letters representing the colors (r)ed, (g)reen, (b)lue, or (y)ellow.\n\nAn example guess > 'RRGB'.\n\nThe game will run until you guess the corect answer (giving feedback for incorrect answers along the way), or until you type (q)uit."
     @start_time = Time.new
@@ -20,8 +21,19 @@ class Game
     @start_time = Time.now
   end
 
-  def quit
-    Process.exit
+  def set_difficulty(difficulty)
+    @difficulty = difficulty
+  end
+
+  def start_message
+    case @difficulty
+    when "beginner"
+      "I have generated a beginner sequence with four elements made up of: (r)ed, (g)reen, (b)lue, and (y)ellow. Use (q)uit at any time to end the game."
+    when "intermediate"
+      "I have generated a beginner sequence with six elements made up of: (r)ed, (g)reen, (b)lue, (y)ellow, and (m)agenta. Use (q)uit at any time to end the game."
+    when "advanced"
+      "I have generated a beginner sequence with eight elements made up of: (r)ed, (g)reen, (b)lue, (y)ellow, (m)agenta, and (c)yan. Use (q)uit at any time to end the game."
+    end
   end
 
   def evaluate_guess(guess)
@@ -42,14 +54,18 @@ class Game
     # Gather colors of guess into an array for feedback
     colors_of_guess_for_feedback = colors_of_guess.map do |color_guess|
       case color_guess["color"].downcase
-      when 'r'
-        "\033[31mR"
-      when 'g'
-        "\033[32mG"
-      when 'b'
-        "\033[34mB"
-      when 'y'
-        "\033[33mY"
+      when "r"
+        "\033[31mR\033[30m"
+      when "g"
+        "\033[32mG\033[30m"
+      when "b"
+        "\033[34mB\033[30m"
+      when "y"
+        "\033[33mY\033[30m"
+      when "m"
+        "\033[35mM\033[30m"
+      when "c"
+        "\033[36mC\033[30m"
       else
         color_guess["color"].upcase
       end
@@ -70,18 +86,26 @@ class Game
     end
     
     #Give feedback
-    puts "'#{colors_of_guess_for_feedback.join}\033[30m' has #{number_of_correct_colors} correct elements with #{number_of_correct_positions} in the correct positions. You've taken #{@player.guesses.length} guesses."
+    "'#{colors_of_guess_for_feedback.join}\033[30m' has #{number_of_correct_colors} correct elements with #{number_of_correct_positions} in the correct positions. You've taken #{@player.guesses.length} #{player.guesses.length > 1 ? "guesses" : "guess"}."
   end
 
   def generate_code
     case @difficulty
     when "beginner"
+      options = ["r", "g", "b", "y"]
+      4.times do |index|
+        @code << options[rand(0..3)]
+      end
     when "intermediate"
+      options = ["r", "g", "b", "y", "m"]
+      6.times do |index|
+        @code << options[rand(0..3)]
+      end
     when "advanced"
-    end
-    options = ["r", "g", "b", "y"]
-    4.times do |index|
-      @code << options[rand(0..3)]
+      options = ["r", "g", "b", "y", "m", "c"]
+      8.times do |index|
+        @code << options[rand(0..3)]
+      end
     end
   end
 
@@ -91,9 +115,9 @@ class Game
     minutes_to_complete = seconds_to_complete / 60
     remaining_seconds_after_minutes = seconds_to_complete % 60
     if minutes_to_complete > 0
-      puts "Congratulations! You guessed the sequence #{correct_guess.upcase} in #{@player.guesses.length} guesses over #{minutes_to_complete} minutes, #{remaining_seconds_after_minutes} seconds."
+      "Congratulations! You guessed the sequence #{correct_guess.upcase} in #{@player.guesses.length} #{player.guesses.length == 1 ? "guess" : "guesses"} over #{minutes_to_complete} #{minutes_to_complete == 1 ? "minute" : "minutes"}, #{remaining_seconds_after_minutes} #{remaining_seconds_after_minutes == 1 ? "second" : "seconds"}."
     else
-      puts "Congratulations! You guessed the sequence #{correct_guess.upcase} in #{@player.guesses.length} guesses over #{seconds_to_complete} seconds."
+      "Congratulations! You guessed the sequence #{correct_guess.upcase} in #{@player.guesses.length} #{player.guesses.length == 1 ? "guess" : "guesses"} over #{seconds_to_complete} #{seconds_to_complete == 1 ? "second" : "seconds"}."
     end
   end
 end

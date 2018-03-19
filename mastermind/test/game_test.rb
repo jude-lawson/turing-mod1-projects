@@ -6,26 +6,59 @@ require './lib/Player'
 class GameTest < MiniTest::Test
   
   def setup
-    @game = Game.new(Player.new, "beginner")
+    @game = Game.new(Player.new("Player 1"))
+    @game.set_difficulty("beginner")
   end
 
   def test_game_exists
     assert_instance_of Game, @game
   end
 
+  def test_difficulty_can_be_set_to_beginner
+    @game.set_difficulty("beginner")
+    assert_equal "beginner", @game.difficulty
+  end
+
+  def test_difficulty_can_be_set_to_intermediate
+    @game.set_difficulty("intermediate")
+    assert_equal "intermediate", @game.difficulty
+  end
+
+  def test_difficulty_can_be_set_to_advanced
+    @game.set_difficulty("advanced")
+    assert_equal "advanced", @game.difficulty
+  end
+
+  def test_beginner_start_message
+    assert_equal "I have generated a beginner sequence with four elements made up of: (r)ed, (g)reen, (b)lue, and (y)ellow. Use (q)uit at any time to end the game.", @game.start_message
+  end
+
+  def test_intermediate_start_message
+    @game.set_difficulty("intermediate")
+    assert_equal "I have generated a beginner sequence with six elements made up of: (r)ed, (g)reen, (b)lue, (y)ellow, and (m)agenta. Use (q)uit at any time to end the game.", @game.start_message
+  end
+
+  def test_advanced_start_message
+    @game.set_difficulty("advanced")
+    assert_equal "I have generated a beginner sequence with eight elements made up of: (r)ed, (g)reen, (b)lue, (y)ellow, (m)agenta, and (c)yan. Use (q)uit at any time to end the game.", @game.start_message
+  end
+
   def test_game_beginner_code_generation
+
     @game.generate_code
     assert_equal 4,@game.code.length
   end
   
   def test_game_intermediate_code_generation
-    game = Game.new(Player.new, "intermediate")
-    assert_equal 6, game.code.length
+    @game.set_difficulty("intermediate")
+    @game.generate_code
+    assert_equal 6, @game.code.length
   end
 
   def test_game_advanced_code_generation
-    game = Game.new(Player.new, "advanced")
-    assert_equal 8, game.code.length
+    @game.set_difficulty("advanced")
+    @game.generate_code
+    assert_equal 8, @game.code.length
   end
 
   def test_game_instructs
@@ -39,24 +72,19 @@ class GameTest < MiniTest::Test
 
   def test_game_timer_can_end
     @game.over('RGBY')
-    assert_equal Time,@game.end_time.class
+    assert_equal Time, @game.end_time.class
   end
 
   def test_game_over_displays_message
-    assert_equal String, @game.over('RGBY')
+    assert_kind_of String, @game.over('RGBY')
   end
-  # def test_game_over_end_game_message_for_less_than_one_minute
-  # end
 
   def test_game_does_give_feedback
     assert_equal String, @game.evaluate_guess('RGBY').class
   end
 
-  def test_game_can_quit
-    
-  end
-
   def test_guesses_can_be_added
+    assert_output("Hello\n") {puts "Hello"}
   end
 
 end
