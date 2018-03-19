@@ -18,7 +18,7 @@ loop do
       if difficulty == "b" || difficulty == "beginner"
         game.set_difficulty("beginner")
         break
-      elsif difficulty == "i" || difficulty == " intermediate"
+      elsif difficulty == "i" || difficulty == "intermediate"
         game.set_difficulty("intermediate")
         break
       elsif difficulty == "a" || difficulty == "advanced"
@@ -38,12 +38,14 @@ loop do
     puts game.start_message
     loop do
       print "What's your guess? > "
-      guess = gets.chomp
+      guess = gets.chomp.downcase
       if guess == game.code.join
         puts game.over(guess)
         break
       elsif guess == "c" || guess == "cheat"
         puts "The secret code is #{game.code.join}"
+      elsif guess == "h" || guess == "history"
+        puts player.show_history
       elsif guess == "quit" || guess == "q"
         Process.exit
       elsif guess.length < game.code.length
@@ -51,6 +53,7 @@ loop do
       elsif guess.length > game.code.length
         puts "That guess was too long."
       else 
+        player.add_guess(guess)
         puts game.evaluate_guess(guess)
       end
     end

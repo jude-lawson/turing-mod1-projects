@@ -22,4 +22,11 @@ class PlayerTest < MiniTest::Test
     assert_equal "Lawson", @player.name
   end
 
+  def test_history_can_be_displayed
+    @player.update_name("Jude")
+    @player.add_guess("RGGB")
+    @player.add_guess("BGGY")
+    assert_equal "So far, Jude has guessed: \nRGGB\nBGGY", @player.show_history
+  end
+
 end

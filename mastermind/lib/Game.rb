@@ -50,7 +50,6 @@ class Game
         color_guessed["correct_position"] = true
       end
     end
-    @player.guesses << colors_of_guess
     # Gather colors of guess into an array for feedback
     colors_of_guess_for_feedback = colors_of_guess.map do |color_guess|
       case color_guess["color"].downcase
@@ -73,10 +72,12 @@ class Game
 
     # Get number of correct colors and positions in guess
     number_of_correct_colors = 0
+    already_correct_color_characters = []
     number_of_correct_positions = 0
     colors_of_guess.each do |color_guess|
-      if color_guess["correct_color"] == true
+      if color_guess["correct_color"] == true && already_correct_color_characters.include?(color_guess["color"]) == false
         number_of_correct_colors += 1
+        already_correct_color_characters << color_guess["color"]
       end
 
       if color_guess["correct_position"] == true
@@ -86,7 +87,7 @@ class Game
     end
     
     #Give feedback
-    "'#{colors_of_guess_for_feedback.join}\033[30m' has #{number_of_correct_colors} correct elements with #{number_of_correct_positions} in the correct positions. You've taken #{@player.guesses.length} #{player.guesses.length > 1 ? "guesses" : "guess"}."
+    "'#{colors_of_guess_for_feedback.join}\033[30m' has #{number_of_correct_colors} correct #{number_of_correct_colors == 1 ? "element" : "elements"} with #{number_of_correct_positions} in the correct #{number_of_correct_positions == 1 ? "position" : "positions"}. You've taken #{@player.guesses.length} #{player.guesses.length > 1 ? "guesses" : "guess"}."
   end
 
   def generate_code
