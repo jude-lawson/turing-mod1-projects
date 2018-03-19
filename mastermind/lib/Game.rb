@@ -1,3 +1,5 @@
+require 'json'
+
 class Game
   attr_reader :choice,
               :code,
@@ -14,6 +16,7 @@ class Game
     @instructions = "This game is about guessing a randomly generated sequence of colors in a particular order. When prompted, enter a guess in the form of successive letters representing the colors (r)ed, (g)reen, (b)lue, or (y)ellow.\n\nAn example guess > 'RRGB'.\n\nThe game will run until you guess the corect answer (giving feedback for incorrect answers along the way), or until you type (q)uit."
     @start_time = Time.new
     @end_time = Time.new
+    @total_time = ""
   end
 
 
@@ -110,14 +113,31 @@ class Game
     end
   end
 
+  def add_high_score
+    if File.exist?("lib/data/scores.json")
+      high_scores_data_file = File.read("lib/data/scores.json")
+      high_scores_data = JSON.parse(high_scores_data_file)
+      high_scores_data["scores"] << ({"name" => @player.name, "pattern" => @code, "guesses" => @player.guesses.length, "time" => @total_time })
+      high_scores = JSON.generate(high_scores_data)
+      # require 'pry'; binding.pry
+    else
+      high_scores = JSON.generate({"scores" => [{"name" => @player.name, "pattern" => @code, "guesses" => @player.guesses.length, "time" => @total_time }]})
+    end
+    #still have to sort hash
+    high_scores_data_file = IO.write("lib/data/scores.json", high_scores, {mode: "w+"})
+  end
+
   def over(correct_guess)
     @end_time = Time.now
     seconds_to_complete = @end_time.to_i - @start_time.to_i
     minutes_to_complete = seconds_to_complete / 60
     remaining_seconds_after_minutes = seconds_to_complete % 60
+    @total_time = "#{minutes_to_complete}m#{remaining_seconds_after_minutes}s"
     if minutes_to_complete > 0
+      @total_time = "#{minutes_to_complete}m#{remaining_seconds_after_minutes}s"
       "Congratulations! You guessed the sequence #{correct_guess.upcase} in #{@player.guesses.length} #{player.guesses.length == 1 ? "guess" : "guesses"} over #{minutes_to_complete} #{minutes_to_complete == 1 ? "minute" : "minutes"}, #{remaining_seconds_after_minutes} #{remaining_seconds_after_minutes == 1 ? "second" : "seconds"}."
     else
+      @total_time = "0m#{seconds_to_complete}s"
       "Congratulations! You guessed the sequence #{correct_guess.upcase} in #{@player.guesses.length} #{player.guesses.length == 1 ? "guess" : "guesses"} over #{seconds_to_complete} #{seconds_to_complete == 1 ? "second" : "seconds"}."
     end
   end

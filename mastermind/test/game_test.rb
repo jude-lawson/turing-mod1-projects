@@ -87,4 +87,7 @@ class GameTest < MiniTest::Test
     assert_output("Hello\n") {puts "Hello"}
   end
 
+  def test_add_high_score_creates_file
+    @game.add_high_score
+  end
 end

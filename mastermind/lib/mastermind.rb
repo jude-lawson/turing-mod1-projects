@@ -41,6 +41,7 @@ loop do
       guess = gets.chomp.downcase
       if guess == game.code.join
         puts game.over(guess)
+        game.add_high_score
         break
       elsif guess == "c" || guess == "cheat"
         puts "The secret code is #{game.code.join}"
